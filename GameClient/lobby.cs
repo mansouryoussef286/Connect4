@@ -15,10 +15,18 @@ namespace Client
 {
     public partial class lobby : Form
     {
-        public choosecolor join_game;
-        public spectate join_spectate;
-        public createRoom create_room;
+        //pop-up menus and controls
+        public choosecolor chooseColorForm;
+        public spectate spectateForm;
+        public createRoom createRoomForm;
         public RoomControl prev_select;
+        public static waiting wait;
+
+        
+
+        //challenger player selected room roomcontrol
+        //public static RoomControl currentroom;
+
         //create room data 
         public string Roomname_new;
         public int board_hight;
@@ -26,8 +34,6 @@ namespace Client
         public Form board;
         public static lobby mainlobby;
         public static GameBoard seegamebaord;
-        public static waiting wait;
-        public static Room currentroom;
 
 
         public lobby()  
@@ -35,213 +41,177 @@ namespace Client
             InitializeComponent();
             mainlobby = this;
         }
-        ~lobby()
-        {
-           
-            (this.Parent as login).Close();
-        }
-        private void Lobby_Load(object sender, EventArgs e)
-        {
-            //showplayer();
-            //showroom();
-        }
-
-        public void showplayer()
+       
+        #region updating the lobby
+        //updating the players in the lobby
+        public void showplayers()
         {
             flowLayoutPanel1.Controls.Clear();
-            player[] playerlist = new player[GameManger.playerslist.Count];
+            playerControl[] playerlist = new playerControl[GameManager.playerslist.Count];
             for (int i = 0; i < playerlist.Length; i++)
             {
-                playerlist[i] = new player();
-                playerlist[i].playername = GameManger.playerslist[i].Name;
-                playerlist[i].PlayerIsplaying = GameManger.playerslist[i].isplaying;
-                
+                //add a control for each player in the player list
+                playerlist[i] = new playerControl();
+                playerlist[i].playerControlname = GameManager.playerslist[i].Name;
+                playerlist[i].PlayerControlIsplaying = GameManager.playerslist[i].IsPlaying;
+                //add the control to the panel
                 flowLayoutPanel1.Controls.Add(playerlist[i]);
-                
-                //if (flowLayoutPanel1.Controls.Count>0)
-                //{
-                //flowLayoutPanel1.Controls.Clear();
-                //}
-                //else
-
             }
         }
-
-
-        public void showroom()
+        //updating the rooms in the lobby
+        public void showrooms()
         {
             flowLayoutPanel2.Controls.Clear();
-
-            RoomControl[] roomlist = new RoomControl[GameManger.Rommslist.Count];
+            RoomControl[] roomlist = new RoomControl[GameManager.Roomslist.Count];
             for (int i = 0; i < roomlist.Length; i++)
             {
                 roomlist[i] = new RoomControl();
-                roomlist[i].roomname = GameManger.Rommslist[i].Name;
-                if (GameManger.Rommslist[i].challenger !=null)
+                roomlist[i].roomname = GameManager.Roomslist[i].RoomName;
+                if (GameManager.Roomslist[i].RoomPlayers.Count>1)
                 {
-                    roomlist[i].NumberofPlayers = 2;
+                    //add a control for each player in the player list
+                    roomlist[i].NumberofPlayers = GameManager.Roomslist[i].RoomPlayers.Count;
                 }
-               
+                //add the control to the panel
                 flowLayoutPanel2.Controls.Add(roomlist[i]);
-
-
-                //if (flowLayoutPanel1.Controls.Count>0)
-                //{
-                //flowLayoutPanel1.Controls.Clear();
-                //}
-                //else
-
             }
         }
-
-        private void Button3_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void Button3_MouseEnter(object sender, EventArgs e)
-        {
-            button3.BackColor = Color.DarkRed;
-        }
-
-        private void Button3_MouseLeave(object sender, EventArgs e)
-        {
-            button3.BackColor = Color.FromArgb(217,83,79);
-        }
-
-        private void Button1_MouseEnter(object sender, EventArgs e)
-        {
-            button1.BackColor = Color.Green;
-        }
-
-        private void Button1_MouseLeave(object sender, EventArgs e)
-        {
-            button1.BackColor = Color.FromArgb(51, 178, 73);
-        }
-
-        private void Button2_MouseEnter(object sender, EventArgs e)
-        {
-            button2.BackColor = Color.Blue;
-
-        }
-        private void Button2_MouseLeave(object sender, EventArgs e)
-        {
-            button2.BackColor = Color.FromArgb(87, 131, 219);
-
-        }
-
-        private void Timer1_Tick(object sender, EventArgs e)
-        {
-            showplayer();
-            showroom();
-        }
-
-        private void Lobby_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            try
-            {
-                GameManger.SendServerRequest(Flag.disconnect, "");
-            }
-            catch (Exception)
-            {
+        #endregion
 
 
-            }
-        
-            Application.Exit();
-        }
-
-        private void Button1_Click(object sender, EventArgs e)
+        #region buttons clicking handling
+        //clicking handling
+        private void joinBtn_Click(object sender, EventArgs e)
         {
             var cons = flowLayoutPanel2.Controls;
             var selected = from RoomControl con in cons
                            where con.BackColor == Color.Silver
                            select con.TabIndex;
-            currentroom = GameManger.Rommslist[selected.ElementAt(0)];
-            if (selected.Count() == 0) //no room selected
+            GameManager.CurrentRoom = GameManager.Roomslist[selected.ElementAt(0)];
+            if (selected.Count() == 0) 
             {
+                //no room selected
                 message ms = new message();
                 ms.msg = "please select a room before \n joining";
                 DialogResult res = ms.ShowDialog();
-
             }
-            else
+            else //a room was selected
             {
-                if (GameManger.Rommslist[selected.ElementAt(0)].challenger == null)//&& !GameManger.Rommslist[selected.ElementAt(0)].occupied  
-                {
-                    GameManger.SendServerRequest(Flag.joinRoom, GameManger.Rommslist[selected.ElementAt(0)].Name);
-                    join_game = new choosecolor();
-                    var dg = join_game.ShowDialog();
-                    if (dg == DialogResult.OK)
-                    {
-                        GameManger.SendServerRequest(Flag.asktoplay, GameManger.CurrentPlayer.Name ,GameManger.CurrentPlayer.PlayerColor.ToArgb().ToString());
-                         wait = new waiting();
-                        wait.Show();
+                //send the join room server request
+                GameManager.SendServerRequest(GameManager.Flag.joinRoom, GameManager.CurrentRoom.RoomName);
+                //if (GameManager.Roomslist[selected.ElementAt(0)].challenger == null)//&& !GameManager.Rommslist[selected.ElementAt(0)].occupied  
+                //{
+                //    GameManager.SendServerRequest(Flag.joinRoom, GameManager.Roomslist[selected.ElementAt(0)].Name);
+                //    chooseColorForm = new choosecolor();
+                //    var dg = chooseColorForm.ShowDialog();
+                //    if (dg == DialogResult.OK)
+                //    {
+                //        GameManager.SendServerRequest(Flag.asktoplay, GameManager.CurrentPlayer.Name, GameManager.CurrentPlayer.PlayerColor.ToArgb().ToString());
+                //        wait = new waiting();
+                //        wait.Show();
 
-                    }
-                    //GameManger.Rommslist[selected.ElementAt(0)].occupied = true;
-                }
-                else
-                {
-                    //GameManger.SendServerRequest(Flag.joinRoom, GameManger.Rommslist[selected.ElementAt(0)].Name);
-                    //MessageBox.Show(selected.ElementAt(0).ToString() + "you are inspectator");
-                    join_spectate = new spectate();
-                    var dg = join_spectate.ShowDialog();
-                
-                    if (dg == DialogResult.OK)
-                    {
-                        GameManger.SendServerRequest(Flag.joinRoom, GameManger.Rommslist[selected.ElementAt(0)].Name);
+                //    }
+                //    //GameManager.Rommslist[selected.ElementAt(0)].occupied = true;
+                //}
+                //else
+                //{
+                //    //GameManager.SendServerRequest(Flag.joinRoom, GameManager.Rommslist[selected.ElementAt(0)].Name);
+                //    //MessageBox.Show(selected.ElementAt(0).ToString() + "you are inspectator");
+                //    spectateForm = new spectate();
+                //    var dg = spectateForm.ShowDialog();
 
-                    }
-                }
+                //    if (dg == DialogResult.OK)
+                //    {
+                //        GameManager.SendServerRequest(Flag.joinRoom, GameManager.Roomslist[selected.ElementAt(0)].Name);
+
+                //    }
+                //}
 
 
 
             }
 
-            
+
 
         }
-
-
-        private void Button2_Click(object sender, EventArgs e)
+        private void createRoomBtn_Click(object sender, EventArgs e)
         {
-            create_room = new createRoom();
-            var dg = create_room.ShowDialog();
-            
+            createRoomForm = new createRoom();
+            var dg = createRoomForm.ShowDialog();
+
             if (dg == DialogResult.OK)
             {
+                //create a room  
+                GameManager.CurrentRoom = new clientRoom(GameManager.CurrentPlayer.Name, createRoomForm.Roomname_new);
+                GameManager.CurrentRoom.Rows = createRoomForm.board_hight;
+                GameManager.CurrentRoom.Cols = createRoomForm.board_width;
+                GameManager.CurrentPlayer.Color = createRoomForm.Selected_color1;
+                //send the create room request
+                GameManager.SendServerRequest(GameManager.Flag.createRoom,
+                    GameManager.CurrentPlayer.Name + "+" + createRoomForm.Selected_color1.ToArgb().ToString(),
+                     Roomname_new, board_hight.ToString() + "+"+board_width.ToString());
+                
+                //assign the current player stats
 
-                Roomname_new = create_room.Roomname_new;
-                board_width = create_room.board_width;
-                board_hight = create_room.board_hight;
-           
-                GameManger.SendServerRequest(Flag.createRoom,
-                    GameManger.CurrentPlayer.Name+"+"+GameManger.CurrentPlayer.PlayerColor.ToArgb().ToString(),
-                     Roomname_new, board_width.ToString() +"+"+ board_hight.ToString()
-                    );
-                GameBoard.rows = board_width;
-                GameBoard.columns = board_hight;
-                GameBoard.HostColor = create_room.Selected_color1;
-                GameBoard.ChallangerColor = Color.Purple;
-                GameBoard.turn = 1;
-                GameBoard.playerTurn = 1;
-                currentroom = new Room(Roomname_new, GameManger.CurrentPlayer);
-                board = new GameBoard();
+                //GameBoard.rows = board_width;
+                //GameBoard.columns = board_hight;
+                //GameBoard.HostColor = createRoomForm.Selected_color1;
+                //GameBoard.ChallangerColor = Color.Purple;
+                //GameBoard.turn = 1;
+                //GameBoard.playerTurn = 1;
+                //board = new GameBoard();
+
                 wait = new waiting();
-                wait.msg = "Waiting for somone to join \n so you can Play :)";
+                wait.msg = "Waiting for somone to join \nso you can Play :)";
                 wait.Show();
-               
-
             }
 
         }
+        private void disconnectBtn_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+        #endregion
 
 
+        #region lobby buttons handling rendring effects
+        private void disconnectBtn_MouseEnter(object sender, EventArgs e)
+        {
+            disconnectBtn.BackColor = Color.DarkRed;
+        }
+        private void disconnectBtn_MouseLeave(object sender, EventArgs e)
+        {
+            disconnectBtn.BackColor = Color.FromArgb(217, 83, 79);
+        }
+        private void joinBtn_MouseEnter(object sender, EventArgs e)
+        {
+            joinBtn.BackColor = Color.Green;
+        }
+        private void joinBtn_MouseLeave(object sender, EventArgs e)
+        {
+            joinBtn.BackColor = Color.FromArgb(51, 178, 73);
+        }
+        private void createRoomBtn_MouseEnter(object sender, EventArgs e)
+        {
+            createRoomBtn.BackColor = Color.Blue;
 
+        }
+        private void createRoomBtn_MouseLeave(object sender, EventArgs e)
+        {
+            createRoomBtn.BackColor = Color.FromArgb(87, 131, 219);
 
+        }
+        #endregion
 
-        //drag the borderless form 
+        //on form closing send the disconnect player flag to the server
+        private void Lobby_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            GameManager.SendServerRequest(GameManager.Flag.disconnect, "");
+            (this.Parent as login).Close();
+            Application.Exit();
+        }
+
+        #region drag the borderless form 
         public const int WM_NCLBUTTONDOWN = 0xA1;
         public const int HT_CAPTION = 0x2;
 
@@ -267,11 +237,6 @@ namespace Client
                 SendMessage(Handle, WM_NCLBUTTONDOWN, HT_CAPTION, 0);
             }
         }
-
-
-
-
-
-        // end code of dragable form
+        #endregion
     }
 }

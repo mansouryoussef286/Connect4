@@ -10,46 +10,36 @@ using System.Windows.Forms;
 
 namespace Client
 {
-
     public partial class RoomControl : UserControl
     {
-       
-        public string selected_room;
-        private string _roomname;
+        //public string selected_room;
         private int _NumberofPlayers;
 
         public string roomname
         {
-            get { return _roomname; }
-            set { _roomname = value; label1.Text = value; }
+            get { return label1.Text; }
+            set { label1.Text = value; }
         }
         public int NumberofPlayers
         {
             get { return _NumberofPlayers; }
-            set { _NumberofPlayers = value;
-           
-                  label2.Text = value.ToString() + "/2";
-              
-
-                 }
+            set
+            {
+                _NumberofPlayers = value;
+                if (value == 1)
+                {
+                    label2.Text = _NumberofPlayers.ToString() + " player";
+                }
+                else
+                {
+                    label2.Text = _NumberofPlayers.ToString() + " players";
+                }
+            }
         }
-
 
         public RoomControl()
         {
-
             InitializeComponent();
-        }
-
-        private void RoomControl_MouseEnter(object sender, EventArgs e)
-        {
-            
-
-        }
-
-        private void RoomControl_MouseLeave(object sender, EventArgs e)
-        {
-          
         }
 
         private void RoomControl_MouseClick(object sender, MouseEventArgs e)
@@ -62,29 +52,10 @@ namespace Client
                 {
                     parentForm.prev_select.BackColor = Color.White;
                 }
-                
-                selected_room = this.label1.Text;
+                //selected_room = this.label1.Text;
                 this.BackColor = Color.Silver;
-                 parentForm.prev_select= this;
-              
-
-
-
-
-
-
-
+                parentForm.prev_select= this;
             }
-
-            
-
-
-        }
-
-        private void Label2_Click(object sender, EventArgs e)
-        {
-
         }
     }
-
 }

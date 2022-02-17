@@ -68,6 +68,8 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="clientPlayer.cs" />
+    <Compile Include="clientRoom.cs" />
     <Compile Include="Popups\acceptTheChallenger.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -86,7 +88,7 @@
     <Compile Include="GameBoard.Designer.cs">
       <DependentUpon>GameBoard.cs</DependentUpon>
     </Compile>
-    <Compile Include="GameManger.cs" />
+    <Compile Include="GameManager.cs" />
     <Compile Include="login.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -99,11 +101,11 @@
     <Compile Include="lobby.Designer.cs">
       <DependentUpon>lobby.cs</DependentUpon>
     </Compile>
-    <Compile Include="contorls\player.cs">
+    <Compile Include="contorls\playerControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="contorls\player.Designer.cs">
-      <DependentUpon>player.cs</DependentUpon>
+    <Compile Include="contorls\playerControl.Designer.cs">
+      <DependentUpon>playerControl.cs</DependentUpon>
     </Compile>
     <Compile Include="Popups\choosecolor.cs">
       <SubType>Form</SubType>
@@ -158,8 +160,8 @@
     <EmbeddedResource Include="lobby.resx">
       <DependentUpon>lobby.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="contorls\player.resx">
-      <DependentUpon>player.cs</DependentUpon>
+    <EmbeddedResource Include="contorls\playerControl.resx">
+      <DependentUpon>playerControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Popups\choosecolor.resx">
       <DependentUpon>choosecolor.cs</DependentUpon>

@@ -186,7 +186,7 @@ namespace serverAppConnect4
                     requestedRoom.RoomPlayers.Add(askingPlayer);
                     //requestedRoom.RoomPlayers[0].Bw.Write(askingPlayer.Name + " has joined");
                     askingPlayer.MyRoom = requestedRoom;
-                    askingPlayer.Bw.Write("320,1");
+                    askingPlayer.Bw.Write($"320,1,{requestedRoom.RoomPlayers[0].Color},{requestedRoom.RoomPlayers[1].Color},{requestedRoom.Rows}+{requestedRoom.Cols}");
                 }
                 else
                 {

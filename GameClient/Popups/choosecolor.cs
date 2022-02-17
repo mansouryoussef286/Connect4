@@ -13,12 +13,14 @@ namespace Client
 
     public partial class choosecolor : Form
     {
+        public Color OpponentColor = Color.Black;
         public Color selected_color;
         public choosecolor()
         {
             InitializeComponent();
         }
 
+        #region assign the choosen color
 
         private void Button5_MouseClick(object sender, MouseEventArgs e)
         { 
@@ -56,17 +58,24 @@ namespace Client
 
             }
         }
-
+        #endregion
+        
         private void Button1_Click(object sender, EventArgs e)
         {
-            GameManger.UpdatePlayer(selected_color);
-            ///  code of start the gameeeeee (open game board ) player2 joined with selected color
-            this.DialogResult = DialogResult.OK;
+            if(selected_color == OpponentColor)
+            {
+                MessageBox.Show("the room owner is playing with this color");
+            }
+            else
+            {
+                GameManager.CurrentPlayer.Color = selected_color;
+                this.DialogResult = DialogResult.OK;
+            }
         }
 
 
 
-        //drag the borderless form 
+        #region drag the borderless form 
         public const int WM_NCLBUTTONDOWN = 0xA1;
         public const int HT_CAPTION = 0x2;
 
@@ -84,6 +93,6 @@ namespace Client
             }
         }
         // End code of dragable form
-
+        #endregion
     }
 }

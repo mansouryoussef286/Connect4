@@ -13,7 +13,7 @@ namespace Client
     public partial class login : Form
     {
         lobby start_lobby;
-        public string playername;
+        public string playerName;
         private bool firstlogin = true;
 
         public login()
@@ -21,147 +21,73 @@ namespace Client
             InitializeComponent();
         }
 
-        private void Button1_Click(object sender, EventArgs e)
+        //handle the login button
+        private void loginBtn_click(object sender, EventArgs e)
         {
-            if (textBox1.Text=="")
+            if (userNameTextBox.Text == "")
             {
                 MessageBox.Show("you need to Enter a user Name to login");
             }
             else
             {
-                playername = textBox1.Text;
-
+                //the client entered a username
+                playerName = userNameTextBox.Text;
                 if (firstlogin)
                 {
                     try
                     {
-                        GameManger.Login(playername);
+                        GameManager.Login(playerName);
                         firstlogin = false;
                         //start_lobby = new lobby();
                         //start_lobby.Show();
                         //this.Hide();
                     }
-
                     catch (Exception)
                     {
                         MessageBox.Show("The Server is Offline please try again later");
-
                     }
-                    try
+                    if (GameManager.isloginSuc(playerName))
                     {
-                        if (GameManger.isloginSuc(playername))
-                        {
-                            start_lobby = new lobby();
-                            start_lobby.Text += "- " + playername;
-                            GameManger.recieve = new Task(GameManger.ReceiveServerRequest);
-                            GameManger.recieve.Start();
-                            GameManger.SendServerRequest(Flag.getPlayers);
-                            GameManger.SendServerRequest(Flag.getRooms);
+                        start_lobby = new lobby();
+                        start_lobby.Text += "- " + playerName;
+                        GameManager.recieveThread = new Task(GameManager.ReceiveServerResponse);
+                        GameManager.recieveThread.Start();
+                        GameManager.SendServerRequest(GameManager.Flag.getPlayers);
+                        GameManager.SendServerRequest(GameManager.Flag.getRooms);
 
-                            start_lobby.Show();
-                            this.Hide();
-                        }
-
-
-                        else
-                        {
-                            GameManger.SendServerRequest(Flag.sendLoginInfo, playername);
-                            if (GameManger.isloginSuc(playername))
-                            {
-                                start_lobby = new lobby();
-                                start_lobby.Show();
-                                this.Hide();
-                            }
-                        }
+                        start_lobby.Show();
+                        this.Hide();
                     }
-                    catch (Exception)
-                    {
-
-                   
-                    }
-
-
-                }
- 
-            }
-
-            
-        }
-
-        private void TextBox1_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.KeyCode == Keys.Enter)
-            {
-                if (textBox1.Text == "")
-                {
-                    MessageBox.Show("you need to Enter a user Name to login");
                 }
                 else
                 {
-                    playername = textBox1.Text;
-
-                    if (firstlogin)
+                    GameManager.SendServerRequest(GameManager.Flag.sendLoginInfo, playerName);
+                    if (GameManager.isloginSuc(playerName))
                     {
-                        try
-                        {
-                            GameManger.Login(playername);
-                            firstlogin = false;
-                            //start_lobby = new lobby();
-                            //start_lobby.Show();
-                            //this.Hide();
-                        }
+                        start_lobby = new lobby();
+                        start_lobby.Text += "- " + playerName;
+                        GameManager.recieveThread = new Task(GameManager.ReceiveServerResponse);
+                        GameManager.recieveThread.Start();
+                        GameManager.SendServerRequest(GameManager.Flag.getPlayers);
+                        GameManager.SendServerRequest(GameManager.Flag.getRooms);
 
-                        catch (Exception)
-                        {
-                            MessageBox.Show("The Server is Offline please try again later");
-
-                        }
-                        try
-                        {
-                            if (GameManger.isloginSuc(playername))
-                            {
-                                start_lobby = new lobby();
-                                start_lobby.Text += "- " + playername;
-                                GameManger.recieve = new Task(GameManger.ReceiveServerRequest);
-                                GameManger.recieve.Start();
-                                GameManger.SendServerRequest(Flag.getPlayers);
-                                GameManger.SendServerRequest(Flag.getRooms);
-
-                                start_lobby.Show();
-                                this.Hide();
-                            }
-
-
-                            else
-                            {
-                                GameManger.SendServerRequest(Flag.sendLoginInfo, playername);
-                                if (GameManger.isloginSuc(playername))
-                                {
-                                    start_lobby = new lobby();
-                                    start_lobby.Show();
-                                    this.Hide();
-                                }
-                            }
-                        }
-                        catch (Exception)
-                        {
-
-
-                        }
-
-
+                        start_lobby.Show();
+                        this.Hide();
                     }
-
                 }
-
-
             }
         }
 
+        //handle enter key press on the text box
+        private void userNameTextBox_Click(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                loginBtn_click(new object(), EventArgs.Empty);
+            }
+        }
 
-
-
-        //drag the borderless form 
+        #region   drag the borderless form 
         public const int WM_NCLBUTTONDOWN = 0xA1;
         public const int HT_CAPTION = 0x2;
 
@@ -194,9 +120,9 @@ namespace Client
 
             try
             {
-                if (GameManger.connStatues)
+                if (GameManager.connStatus)
                 {
-                    GameManger.SendServerRequest(Flag.disconnect, "");
+                    GameManager.SendServerRequest(GameManager.Flag.disconnect, "");
                 }
             }
             catch (Exception)
@@ -205,6 +131,8 @@ namespace Client
 
             }
         }
-        // end code of dragable form
+        #endregion
     }
 }
+
+

@@ -24,20 +24,20 @@ namespace Client
 
         private static void Application_ApplicationExit(object sender, EventArgs e)
         {
-            if (GameManger.connStatues)
-            {
+            //if (GameManager.connStatues)
+            //{
 
-                try
-                {
-                    GameManger.SendServerRequest(Flag.disconnect, "");
-                }
-                catch (Exception)
-                {
+            //    try
+            //    {
+            //        GameManager.SendServerRequest(GameManager.Flag.disconnect, "");
+            //    }
+            //    catch (Exception)
+            //    {
 
                    
-                }
+            //    }
                 
-            }
+            //}
         }
     }
 }

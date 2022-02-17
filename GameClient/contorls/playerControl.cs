@@ -10,9 +10,9 @@ using System.Windows.Forms;
 
 namespace Client
 {
-    public partial class player : UserControl
+    public partial class playerControl : UserControl
     {
-        public player()
+        public playerControl()
         {
             InitializeComponent();
         }
@@ -20,12 +20,12 @@ namespace Client
 
         private string _playername;
 
-        public string playername
+        public string playerControlname
         {
             get { return _playername; }
             set { _playername = value; label1.Text = value; }
         }
-        public bool PlayerIsplaying
+        public bool PlayerControlIsplaying
         {
             set {
                 label2.Visible = value;
