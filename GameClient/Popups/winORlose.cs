@@ -50,22 +50,15 @@ namespace Client
             if (result == -1)
             {
                 //if the player is spectator
-            
                 GameBoard.currntGameboard.Close();
                 DialogResult = DialogResult.Cancel;
-                //for (var i = 1; i < GameManger.playerslist.Count; i++)
-                //{
-                //    GameManger.playerslist.RemoveAt(i);
-                //}
             }
             else
             {
-              
                 // is host or challanger
-                GameManger.SendServerRequest(Flag.playAgain, "0");
-
+                GameManager.SendServerRequest(GameManager.Flag.playAgain, "0");
       
-                if (lobby.currentroom.Host.Name != GameManger.CurrentPlayer.Name)//if the challanger closed the game
+                if (GameManager.CurrentRoom.roomHost.Name != GameManager.CurrentPlayer.Name)//if the challanger closed the game
                 {
                     GameBoard.currntGameboard.Close();
                     DialogResult = DialogResult.Cancel;
@@ -86,13 +79,13 @@ namespace Client
             }
             else
             {
-                GameManger.SendServerRequest(Flag.playAgain, "1");
+                GameManager.SendServerRequest(GameManager.Flag.playAgain, "1");
                 DialogResult = DialogResult.OK;
             }
         }
 
 
-        //drag the borderless form 
+        #region drag the borderless form 
         public const int WM_NCLBUTTONDOWN = 0xA1;
         public const int HT_CAPTION = 0x2;
 
@@ -110,5 +103,6 @@ namespace Client
             }
 
         }
+        #endregion
     }
 }

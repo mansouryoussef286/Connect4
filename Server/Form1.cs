@@ -60,7 +60,7 @@ namespace serverAppConnect4
         public void NewClientListener()
         {
             add = new IPAddress(bt);
-            server = new TcpListener(add, 2222);
+            server = new TcpListener(add, 12121);
             server.Start();
             MessageBox.Show("server started");
 
@@ -83,7 +83,6 @@ namespace serverAppConnect4
                 //launch the thread of the new player
                 tempPlayer.PlayerThread = new Task(tempPlayer.playerHandling, tempPlayer.tokenSource.Token);
                 tempPlayer.PlayerThread.Start();
-
 
             }
         }

@@ -21,11 +21,10 @@ namespace Client
     {
         #region server fields
         //server variables
-        static TcpClient server;
         static string ip;
         static int port;
         static IPAddress ServerIP;
-        
+        TcpClient server;
         public static bool connStatus;
 
         //user's info
@@ -65,7 +64,7 @@ namespace Client
         GameManager()
         {
             ip = "127.0.0.1";
-            port = 2222;
+            port = 12121;
             connStatus = false;
             ServerIP = IPAddress.Parse(ip);
 
@@ -80,7 +79,7 @@ namespace Client
             try
             {
                 //connect with the server
-                server = new TcpClient();
+                TcpClient server = new TcpClient();
                 server.Connect(ServerIP, port);
                 ConnectionStream = server.GetStream();
                 br = new BinaryReader(ConnectionStream);
@@ -90,7 +89,7 @@ namespace Client
             }
             catch (Exception e)
             {
-                MessageBox.Show(e.Message);
+                MessageBox.Show("leeeeeeeh" + e.Message);
             }
         }
         //check if the login name is valid from the server

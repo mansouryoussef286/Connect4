@@ -22,6 +22,7 @@ namespace Client
         int gameEnded = 0;
         //room players list
         List<clientPlayer> roomPlayers = new List<clientPlayer>();
+        public clientPlayer roomHost;
 
         //class getters and setters
         public int RoomID { get { return roomID; } set { roomID = value; } }
